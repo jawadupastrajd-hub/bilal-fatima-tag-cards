@@ -1,0 +1,31 @@
+name: Extract site zip
+
+on:
+  push:
+    paths:
+      - 'bilal-fatima-tag-cards.zip'
+      - '.github/workflows/extract.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Extract zip flat to repo root
+        run: |
+          if [ ! -f bilal-fatima-tag-cards.zip ]; then echo "No zip found, nothing to do."; exit 0; fi
+          unzip -o bilal-fatima-tag-cards.zip -d .
+          rm bilal-fatima-tag-cards.zip
+          ls -la
+      - name: Commit extracted files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git status --short
+          git commit -m "Extract bilal-fatima-tag-cards.zip to repo root" || echo "Nothing to commit"
+          git push
